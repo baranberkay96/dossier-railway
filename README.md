@@ -1,5 +1,7 @@
 # Deploy and Host Dossier with Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/dossier-v1-ai-job-search-and-resume-tail?referralCode=20H68q)
+
 Dossier is an open-source (AGPL-3.0), self-hosted job search workspace: one career profile, a tailored resume and cover letter for each job, PDF export, and every application tracked from draft to offer. This community template runs the official Dossier 1.10.0 image with Postgres, a backup volume and a generated, hashed sign-in password.
 
 ## About Hosting Dossier
