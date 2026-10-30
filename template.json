@@ -1,0 +1,225 @@
+{
+ "name": "Dossier v1 AI Job Search and Resume Tailor",
+ "description": "Track job applications and generate tailored resumes and cover letters.",
+ "category": "AI/ML",
+ "tags": [
+  "dossier",
+  "job-search",
+  "resume",
+  "cover-letter",
+  "job-tracker",
+  "career",
+  "ai",
+  "self-hosted",
+  "postgres",
+  "nextjs"
+ ],
+ "image": "https://cdn.jsdelivr.net/gh/AienTech/dossier@v1.10.0/src/app/icon.svg",
+ "upstream": {
+  "repo": "AienTech/dossier",
+  "version": "1.10.0 (tag v1.10.0, commit a1ab9216b8723c25cf4ed60596cd886e753086da; image ghcr.io/aientech/dossier:v1.10.0, index digest sha256:2a4dd7b790637fbf9135b462c584ccfdf056f28836a6dd17fd8a660cffd2d677, created 2026-10-29)",
+  "checked": "2026-10-30"
+ },
+ "services": {
+  "Dossier": {
+   "icon": "https://cdn.jsdelivr.net/gh/AienTech/dossier@v1.10.0/src/app/icon.svg",
+   "source": {
+    "repo": "baranberkay96/dossier-railway",
+    "rootDirectory": "/services/dossier"
+   },
+   "startCommand": null,
+   "preDeployCommand": null,
+   "healthcheckPath": "/api/health",
+   "healthcheckTimeout": 600,
+   "restartPolicyType": "ON_FAILURE",
+   "restartPolicyMaxRetries": 10,
+   "numReplicas": 1,
+   "cronSchedule": null,
+   "publicDomain": true,
+   "targetPort": 3000,
+   "tcpProxy": null,
+   "volume": {
+    "mountPath": "/data"
+   },
+   "variables": {
+    "DOSSIER_LOGIN_PASSWORD": {
+     "defaultValue": "${{secret(24, \"abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789\")}}",
+     "description": "Your sign-in password, generated at deploy (min. 12 chars). Hashed with argon2id at boot; Dossier never sees it in plain text. Change and redeploy to rotate.",
+     "required": false
+    },
+    "DOSSIER_PASSWORD": {
+     "defaultValue": "",
+     "description": "Optional. An argon2id hash from Dossier's hash-password tool. When set it is used instead of DOSSIER_LOGIN_PASSWORD, so you can delete the plain password.",
+     "required": false
+    },
+    "DOSSIER_SECRET": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Signs sessions, encrypts API keys saved in Settings and salts the login hash. Keep it: changing it signs you out and makes saved keys unreadable.",
+     "required": false
+    },
+    "DATABASE_URL": {
+     "defaultValue": "${{Postgres.DATABASE_URL}}",
+     "description": "Postgres on the private network. Migrations run on every boot.",
+     "required": false
+    },
+    "PORT": {
+     "defaultValue": "3000",
+     "description": "Port the Next.js server listens on. The public domain and the healthcheck use it.",
+     "required": false
+    },
+    "HOSTNAME": {
+     "defaultValue": "::",
+     "description": "Bind address. :: listens on IPv4 and IPv6 (Node is dual-stack).",
+     "required": false
+    },
+    "DOSSIER_PUBLIC_URL": {
+     "defaultValue": "https://${{RAILWAY_PUBLIC_DOMAIN}}",
+     "description": "Public HTTPS address, used for Google sign-in and the Claude connector. Change to https://{your-domain} when you add a custom domain.",
+     "required": false
+    },
+    "DOSSIER_DATA_DIR": {
+     "defaultValue": "/data",
+     "description": "Nightly backups, pre-import backups and PDF zips. Must stay on the /data volume.",
+     "required": false
+    },
+    "DOSSIER_BACKUP_RETENTION_DAYS": {
+     "defaultValue": "14",
+     "description": "Days of nightly backups kept on the volume.",
+     "required": false
+    },
+    "TZ": {
+     "defaultValue": "UTC",
+     "description": "Time zone for nightly backups (03:00) and the job agent, e.g. Europe/Berlin.",
+     "required": false
+    },
+    "DOSSIER_AI_PROVIDER": {
+     "defaultValue": "",
+     "description": "Optional default AI provider: openai, anthropic, mistral, local or lmstudio. Empty: choose in Settings > AI provider (saved choices win).",
+     "required": false
+    },
+    "DOSSIER_AI_KEY": {
+     "defaultValue": "",
+     "description": "Optional API key for DOSSIER_AI_PROVIDER. Better: enter it in Settings, where it is stored encrypted. The app runs without one.",
+     "required": false
+    },
+    "DOSSIER_AI_MODEL": {
+     "defaultValue": "",
+     "description": "Optional default model. Empty: Dossier's default for Anthropic and Mistral; OpenAI-compatible and local providers need one here or in Settings.",
+     "required": false
+    },
+    "DOSSIER_AI_URL": {
+     "defaultValue": "",
+     "description": "Optional base URL for an OpenAI-compatible server or Ollama, e.g. http://ollama.railway.internal:11434.",
+     "required": false
+    },
+    "DOSSIER_JOBS_SOURCE": {
+     "defaultValue": "",
+     "description": "Optional default job source: adzuna, jsearch, freehire or off. Empty: Find jobs stays off until you pick one in Settings.",
+     "required": false
+    },
+    "DOSSIER_JOBS_ARBEITSAGENTUR": {
+     "defaultValue": "off",
+     "description": "off removes the unofficial Bundesagentur für Arbeit source, whose terms forbid automated access. on offers it behind an in-app warning.",
+     "required": false
+    },
+    "DOSSIER_TELEMETRY": {
+     "defaultValue": "",
+     "description": "Optional usage ping answer: on or off. Empty: Dossier asks once after sign-in and sends nothing before a yes.",
+     "required": false
+    },
+    "DOSSIER_DB_WAIT_SECONDS": {
+     "defaultValue": "300",
+     "description": "How long boot waits for Postgres before giving up (Railway then restarts the service).",
+     "required": false
+    },
+    "DOSSIER_VERSION": {
+     "defaultValue": "v1.10.0",
+     "description": "Tag of ghcr.io/aientech/dossier, passed to the build. Change and redeploy to upgrade; read the upgrade notes and back up first.",
+     "required": false
+    }
+   }
+  },
+  "Postgres": {
+   "icon": "https://devicons.railway.app/i/postgresql.svg",
+   "source": {
+    "image": "ghcr.io/railwayapp-templates/postgres-ssl:18"
+   },
+   "startCommand": null,
+   "preDeployCommand": null,
+   "healthcheckPath": null,
+   "healthcheckTimeout": null,
+   "restartPolicyType": "ON_FAILURE",
+   "restartPolicyMaxRetries": 10,
+   "numReplicas": 1,
+   "cronSchedule": null,
+   "publicDomain": false,
+   "targetPort": null,
+   "tcpProxy": null,
+   "volume": {
+    "mountPath": "/var/lib/postgresql/data"
+   },
+   "variables": {
+    "PGDATA": {
+     "defaultValue": "/var/lib/postgresql/data/pgdata",
+     "description": "Location where the database will be initialized.",
+     "required": false
+    },
+    "PGHOST": {
+     "defaultValue": "${{RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Railway Private Domain Name.",
+     "required": false
+    },
+    "PGPORT": {
+     "defaultValue": "5432",
+     "description": "Port to connect to Postgres.",
+     "required": false
+    },
+    "PGUSER": {
+     "defaultValue": "${{ POSTGRES_USER }}",
+     "description": "Required variable for Data panel.",
+     "required": false
+    },
+    "PGDATABASE": {
+     "defaultValue": "${{POSTGRES_DB}}",
+     "description": "Required variable for the data panel.",
+     "required": false
+    },
+    "PGPASSWORD": {
+     "defaultValue": "${{POSTGRES_PASSWORD}}",
+     "description": "Required variable for Data panel.",
+     "required": false
+    },
+    "POSTGRES_DB": {
+     "defaultValue": "railway",
+     "description": "Default database created when image is started.",
+     "required": false
+    },
+    "DATABASE_URL": {
+     "defaultValue": "postgresql://${{PGUSER}}:${{POSTGRES_PASSWORD}}@${{RAILWAY_PRIVATE_DOMAIN}}:5432/${{PGDATABASE}}",
+     "description": "URL to connect to Postgres database.",
+     "required": false
+    },
+    "POSTGRES_USER": {
+     "defaultValue": "postgres",
+     "description": "User to connect to Postgres DB.",
+     "required": false
+    },
+    "SSL_CERT_DAYS": {
+     "defaultValue": "820",
+     "description": "SSL certificate expiry in days.",
+     "required": false
+    },
+    "POSTGRES_PASSWORD": {
+     "defaultValue": "${{ secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\") }}",
+     "description": "Password to connect to DB.",
+     "required": false
+    },
+    "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+     "defaultValue": "60",
+     "description": "Allow Postgres to cleanly shut down.",
+     "required": false
+    }
+   }
+  }
+ }
+}
